@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="assets/css/style.css">
+	<link rel="stylesheet" href="assets/css/googlecode.min.css">
+        <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png">
+        <link rel="manifest" href="assets/img/site.webmanifest">
+        <script src="assets/js/icons.js"></script>
+	<script src="config.js" defer></script>
+        <script src="assets/js/chat.js" defer></script>
+	<script src="https://cdn.jsdelivr.net/npm/markdown-it@latest/dist/markdown-it.min.js"></script>
+        <script>const user_image = `<img src="assets/img/user.png" alt="User Avatar">`;
+                const gpt_image = `<img src="assets/img/gpt.png" alt="GPT Avatar">`;</script>
+		<script src="assets/js/highlight.min.js"></script>
+        <script src="assets/js/highlightjs-copy.min.js"></script>
+        <script>window.conversation_id = Array.from(crypto.getRandomValues(new Uint8Array(8))).map(n => n.toString(24).padStart(4, '0')).join('-');</script>
+        <title>ChatGPT</title>
+    </head>
+    <body>
+        <div class="gradient"></div>
+        <div class="row">
+            <div class="box conversations">
+                <div class="top">
+                    <button class="new_convo" onclick="new_conversation()">
+                        <i class="fa-regular fa-plus"></i>
+                        <span>New chat</span>
+                    </button>
+                    <div class="spinner"></div>
+                </div>
+                <div class="bottom_buttons">
+                    <button onclick="delete_conversations()">
+                        <i class="fa-regular fa-trash"></i>
+                        <span>Clean chat</span>
+                    </button>
+                    
+                </div>
+            </div>
+            <div class="conversation">
+                <div class="stop_generating stop_generating-hidden">
+                      <button id="cancelButton" onclick="stopAnswer()">
+                        <span>Stop</span>
+                        <i class="fa-regular fa-stop"></i>
+                    </button>
+                </div>
+                <div class="box" id="messages">
+                </div>
+                <div class="user-input">
+                    <div class="box input-box">
+                        <textarea id="message-input" placeholder="Ask me anything..." style="white-space: pre-line;"></textarea>
+                        <div id="send-button">
+                            <i class="fa-regular fa-paper-plane-top"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="buttons">
+                    <div class="field">
+                        <select name="model" id="model">
+			                <option value="gpt-3.5-turbo-16k">gpt-3.5-turbo-16k</option>
+                            <option value="gpt2">gpt2</option>
+                        </select>
+                    </div>
+                    <div class="Query/Feedback">
+                        <select name="query_or_feedback" id="query_or_feedback">
+                            <option value="Query">Query Mode</option>
+                            <option value="Feedback">Feedback Mode</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div> 
+        <div class="mobile-sidebar">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </body>
+</html>
