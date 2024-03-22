@@ -11,6 +11,6 @@ services:
   code-supporter-server:
     build: ./server
     environment:
-      - OPENAI_API_KEY=sk-...
+      - OPENAI_API_KEY=
     ports:
       - 7999:80 
