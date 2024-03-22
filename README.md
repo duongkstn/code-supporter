@@ -1,4 +1,4 @@
-# Code Supporter
+# Code Supporter :computer:
 
 This project aims to leverage Large Language Model capabilities to support coding.
 
