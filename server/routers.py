@@ -19,6 +19,9 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["User Interface"])
 
+@router.get("/")
+async def index():
+   return {"message": "Hello World, This is FastAPI server"}
 
 @router.get("/health")
 async def health_check():

@@ -19,18 +19,45 @@ The front-end is inspried from ChatGPT UI. It interacts with back-end by using w
 > - Incorporate a featuare that allows users to provide feedback on the generated code snippets.
 > - Utilize this feedback to refine future generations.
 
-Here, there are two options Query mode and Feedback mode. In Query mode, coding prompt is used by Chain-of-Thought prompting technique. In Feedback mode, feedback prompt is used to refine user's negative feedbacks by Few-Shot prompting technique (see file `server/prompts.py`)
+Here, there are two options Query mode and Feedback mode. In Query mode, coding prompt is used by Chain-of-Thought prompting technique. In Feedback mode, feedback prompt is used to refine user's negative feedbacks by Few-Shot prompting technique (see file `server/prompts.py`).
+
+To switch between two modes, you can choose options like below:
+![alt text](image/choose_mode.png)
 
 
 ### 3. Custom LLM Integration:
 > - Develop scripts for running and utilizing a custom LLM either locally or on a GPU server.
 
-In `custom_llm` folder, there is a script to run custom llm by `vllm`.
+In `custom_llm` folder, there is a script to run custom llm by `vllm`. You can input your url to UI and click save:
+![alt text](image/custom_url.png)
+
+In addition, you can choose model you want from options below the input text box.
+![alt text](image/choose_model.png)
 
 ### 4. Containerization:
 > - Provide a Dockerfile along with instructions for building and running the application as a container
 
-The project supports Dockerfile(s).
+The project supports building services by Dockerfile(s).
+To run client webpage docker container, run:
+```
+cd client/
+sudo docker build -t code-supporter-client:latest .
+sudo docker run -d -p 8000:80 code-supporter-client:latest
+```
+
+On the other hand, run server docker container as follows:
+```
+cd server/
+sudo docker build -t code-supporter-server:latest .
+sudo docker run -p 7999:80 -e OPENAI_API_KEY=sk-... code-supporter-server:latest
+```
+
+To simplify, you can run client and server by just one command (please change the `OPENAI_API_KEY` in `docker-compose.yml`):
+```
+sudo docker compose up
+```
+
+After all, go to url `http://localhost:8000/` on browser to start chatting !
 
 ### 5. Snippet Management:
 > - Implement functionality within the same interface to display a list of previously generated code snippets.
@@ -53,7 +80,3 @@ In `server` folder, the usage of files as follows:
 - `routers`: handle FastAPI websocket requests and iteract with client side
 - `prompts.py`: declare prompts
 - `utils.py`: some supportive functions
-
-
-
-

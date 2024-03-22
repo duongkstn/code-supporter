@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  code-supporter-client:
+    build: ./client
+    ports:
+      - 8000:80
+    depends_on:
+      - code-supporter-server
+  
+  code-supporter-server:
+    build: ./server
+    environment:
+      - OPENAI_API_KEY=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
+    ports:
+      - 7999:80 
