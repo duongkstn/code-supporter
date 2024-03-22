@@ -1,16 +1,18 @@
 # Running Custom LLM
 
 Using vllm to run LLMs locally or a GPU server. vllm is a library for efficient LLM inferencing, it seamlessly supports various Huggingface models for coding:
-bigcode/starcoder
-bigcode/starcoder2-3b (7b, 15b)
-codellama/CodeLlama-7b-hf (13b)
-WizardLM/WizardCoder-15B-V1.0
-openchat/opencoderplus
-mosaicml/mpt-7b
-Salesforce/xgen-7b-8k-base
-deepseek-ai/deepseek-coder-6.7b-instruct
-mistralai/Mistral-7B-Instruct-v0.2
+
+- bigcode/starcoder
+- bigcode/starcoder2-3b (7b, 15b)
+- codellama/CodeLlama-7b-hf (13b)
+- WizardLM/WizardCoder-15B-V1.0
+- openchat/opencoderplus
+- mosaicml/mpt-7b
+- Salesforce/xgen-7b-8k-base
+- deepseek-ai/deepseek-coder-6.7b-instruct
+- mistralai/Mistral-7B-Instruct-v0.2
 ...
+
 
 The vllm server has the same interface as OpenAI's API (using FastAPI).
 
@@ -45,7 +47,8 @@ python -m vllm.entrypoints.api_server --model TheBloke/starcoder-GPTQ --quantiza
 ## Other frameworks
 - NVIDIA's TensorRT-LLM
 - Huggingface's text-generation-inference
-Example:
+
+For instance:
 ```
 sudo docker run --gpus all -p 8000:80 ghcr.io/huggingface/text-generation-inference:latest --model-id bigcode/santacoder
 ```
