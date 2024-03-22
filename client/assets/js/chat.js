@@ -11,6 +11,7 @@ let messages = [];
 
 var model = "gpt-3.5-turbo-16k";
 var query_or_feedback = "Query";
+var custom_url = document.getElementById(`url-input`).value;
 
 // Add event listeners
 document.addEventListener("DOMContentLoaded", function() {
@@ -22,6 +23,14 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+const save_url_button = document.querySelector(`#save-url-button`);
+save_url_button.addEventListener(`click`, async () => {
+    console.log("clicked save url");
+    document.getElementById(`save-url-button-i`).className = "fa-regular fa-check"
+    custom_url = document.getElementById(`url-input`).value;
+    document.getElementById(`url-input`).disabled = true;
+});
+
 
 document.addEventListener("DOMContentLoaded", function() {
     var queryfeedbackSelect = document.getElementById(`query_or_feedback`);
@@ -31,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (query_or_feedback === "Query") { 
             document.getElementById(`message-input`).placeholder = "Ask me anything..."; 
         } else {
-            document.getElementById(`message-input`).placeholder = "Please give a feedback..."; 
+            document.getElementById(`message-input`).placeholder = "Please give me a feedback..."; 
         }
     });
 });
@@ -47,6 +56,10 @@ function resizeTextarea(textarea) {
 
 const format = (text) => {
     // return text.replace(/(?:\r\n|\r|\n)/g, "<br>");
+    return text;
+};
+const clean = (text) => {
+    text = text.replaceAll("&lt;", "<").replaceAll("&gt;", ">");
     return text;
 };
 
@@ -144,45 +157,71 @@ const ask_gpt = async (message) => {
         await new Promise((r) => setTimeout(r, 1000));
         window.scrollTo(0, 0);
 
-        messages.push({
-            "role": "user",
-            "content": message
-        });
-        const ws = new WebSocket('ws://0.0.0.0:7999/ws');
-        ws.onopen = () => {
-            console.log("onopen");
-            document.getElementById(`gpt_${window.token}`).innerHTML = markdown.render("");
-            ws.send(JSON.stringify({
-                "model": model,
-                "messages": messages
-            }));
-            
-        };
-        
-
-        ws.onmessage = function(event) {
-            console.log("onmessage");
-            // Append incoming bot message
-            output_ws = JSON.parse(event.data);
-            if (output_ws["type"] === "token") {
-                document.getElementById(`gpt_${window.token}`).innerHTML += output_ws["text"];
-            } else {
-                messages.push({
-                    "role": "assistant",
-                    "content": document.getElementById(`gpt_${window.token}`).innerHTML
-                })
-            }
-        };
-
-    
-		window.scrollTo(0, 0);
+        window.scrollTo(0, 0);
 		message_box.scrollTo({
 			top: message_box.scrollHeight,
 			behavior: "auto"
 		});
 
         add_message(window.conversation_id, "user", message);
-        add_message(window.conversation_id, "assistant", text);
+        if (query_or_feedback === "Query") {
+            messages.push({
+                "role": "user",
+                "content": message
+            });
+        }
+        const ws = new WebSocket('ws://0.0.0.0:7999/ws');
+        ws.onopen = () => {
+            console.log("onopen", custom_url);
+            document.getElementById(`gpt_${window.token}`).innerHTML = markdown.render("");
+            send_data = {
+                "model": model,
+                "custom_url": custom_url,
+                "messages": messages,
+                
+            }
+            if (query_or_feedback === "Feedback") {
+                send_data["feedback"] = message
+            }
+            send_data = JSON.stringify(send_data)
+            console.log("send_data", send_data)
+            ws.send(send_data);
+            
+        };
+        
+
+        ws.onmessage = function(event) {
+            // console.log("onmessage");
+            // Append incoming bot message
+            output_ws = JSON.parse(event.data);
+            console.log("output_ws", output_ws);
+            if (output_ws["type"] === "token") {
+                document.getElementById(`gpt_${window.token}`).innerHTML += output_ws["text"];
+            } else if (output_ws["type"] === "exit_token") {  //exit_token
+                console.log("output = ", clean(document.getElementById(`gpt_${window.token}`).innerHTML));
+                add_message(window.conversation_id, "assistant", clean(document.getElementById(`gpt_${window.token}`).innerHTML));
+                document.getElementById(`gpt_${window.token}`).innerHTML = markdown.render(clean(document.getElementById(`gpt_${window.token}`).innerHTML));
+                messages.push({
+                    "role": "assistant",
+                    "content": document.getElementById(`gpt_${window.token}`).innerHTML
+                })
+                document.querySelectorAll('code:not(p code):not(li code)').forEach((el) => {
+                    hljs.highlightElement(el);
+                    el.classList.add('processed');
+                });
+            } else { //feedback
+                console.log("refined feedback = ", output_ws["text"])
+                messages.push({
+                    "role": "user",
+                    "content": output_ws["text"]
+                })
+            }
+        };
+
+
+    
+		
+        
 
         message_box.scrollTop = message_box.scrollHeight;
         await remove_cancel_button();
@@ -285,16 +324,18 @@ const set_conversation = async (conversation_id) => {
 
 const new_conversation = async () => {
     window.conversation_id = uuid();
+    messages = []
 
     await clear_conversation();
     await load_conversations(20, 0, true);
+    
 };
 
 const load_conversation = async (conversation_id) => {
     let conversation = await JSON.parse(
         localStorage.getItem(`conversation:${conversation_id}`)
     );
-    console.log(conversation, conversation_id);
+    console.log("JJJJ", conversation, conversation_id);
     messages = conversation["items"];
 
     for (item of conversation.items) {
@@ -384,7 +425,7 @@ const load_conversations = async (limit, offset, loader) => {
 
     //if (loader === undefined) spinner.parentNode.removeChild(spinner)
     await clear_conversations();
-
+    console.log("conversations", conversations);
     for (conversation of conversations) {
         box_conversations.innerHTML += `
     <div class="convo" id="convo-${conversation.id}">
