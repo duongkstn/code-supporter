@@ -39,9 +39,7 @@ The project supports Dockerfile(s).
 The client side implements snippet management where `localStorage` of client is used.
 In more details, `localStorage` is a dictionary where key is `conversation_id`, the value is converstions in multiple turns.
 Example a conversation:
-```
 ![alt text](image/conversation.png)
-```
 
 
 
