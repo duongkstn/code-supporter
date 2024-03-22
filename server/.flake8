@@ -1,0 +1,6 @@
+[flake8]
+ignore = F541, E501, F401, W503, F821, F821, E741
+max-line-length = 120
+exclude = .git,__pycache__,docs/source/conf.py,old,build,dist,.venv,src,venv,docs/conf.py
+import-order-style=google
+filename = *.py
